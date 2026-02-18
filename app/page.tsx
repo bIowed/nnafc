@@ -42,7 +42,7 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }} 
             className="text-[10vw] md:text-[120px] font-black italic leading-[0.8] mb-10 uppercase text-white"
           >
-            {settings.settings?.title || settings.title}
+            {settings?.title || settings.title}
           </motion.h1>
           <button className="bg-white text-black px-12 py-5 font-black italic nna-btn text-2xl hover:bg-ufcRed hover:text-white transition-all">
             WATCH PROMO
