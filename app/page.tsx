@@ -5,6 +5,11 @@ import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic'; 
+
+import { useEffect, useState } from 'react';
+
+
 export default function Home() {
   const [settings, setSettings] = useState({ title: 'NNAFC', trailer: '' });
   const [fights, setFights] = useState<any[]>([]);
