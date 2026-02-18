@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Arial Black', sans-serif;
+  text-transform: uppercase;
+}
+
+.nna-btn {
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #D20A0A;
+}
+
+.ufcRed { color: #D20A0A; }
+.bg-ufcRed { background-color: #D20A0A; }
+.border-ufcRed { border-color: #D20A0A; }

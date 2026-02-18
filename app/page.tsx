@@ -1,43 +1,70 @@
 "use client"
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { Lock, Play } from 'lucide-react';
+import { Lock } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
+  const [settings, setSettings] = useState({ title: 'NNAFC', trailer: '' });
+  const [fights, setFights] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const { data: s } = await supabase.from('site_settings').select('*');
+      const title = s?.find(x => x.id === 'hero_title')?.value || 'NNAFC';
+      const trailer = s?.find(x => x.id === 'trailer_id')?.value || '';
+      setSettings({ title, trailer });
+      
+      const { data: v } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+      setFights(v || []);
+    }
+    load();
+  }, []);
+
   return (
-    <main className="bg-black min-h-screen text-white">
-      {/* Hero */}
-      <div className="relative h-[80vh] flex items-center px-10 border-b border-zinc-800 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1595079676339-1534802ad6cf?q=80&w=2000')] bg-cover opacity-30 grayscale"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+    <main className="min-h-screen bg-black overflow-x-hidden">
+      <section className="h-[80vh] relative flex items-center px-10 md:px-20 border-b-[12px] border-ufcRed overflow-hidden">
+        {settings.trailer && (
+          <div className="absolute inset-0 opacity-30 grayscale pointer-events-none">
+            <iframe 
+              className="w-full h-full scale-[1.6]"
+              src={`https://www.youtube.com/embed/${settings.trailer}?autoplay=1&mute=1&controls=0&loop=1&playlist=${settings.trailer}`}
+              allow="autoplay"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
+          </div>
+        )}
         
         <div className="relative z-10">
-          <motion.h1 initial={{ x: -100 }} animate={{ x: 0 }} className="text-[120px] font-black italic uppercase leading-[0.8] tracking-tighter">
-            NNA<span className="text-red-600">FC</span><br/>FIGHTING
+          <motion.h1 
+            initial={{ opacity: 0, x: -50 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            className="text-[10vw] md:text-[120px] font-black italic leading-[0.8] mb-10 uppercase text-white"
+          >
+            {settings.settings?.title || settings.title}
           </motion.h1>
-          <div className="mt-10 flex gap-4">
-            <button className="bg-red-600 px-10 py-4 font-black italic uppercase text-xl skew-x-[-12deg] hover:bg-white hover:text-black transition">Watch Trailer</button>
-            <a href="/register" className="border-2 border-white px-10 py-4 font-black italic uppercase text-xl skew-x-[-12deg] hover:bg-red-600 hover:border-red-600 transition">Join NNA+</a>
-          </div>
+          <button className="bg-white text-black px-12 py-5 font-black italic nna-btn text-2xl hover:bg-ufcRed hover:text-white transition-all">
+            WATCH PROMO
+          </button>
         </div>
-      </div>
+      </section>
 
-      {/* Fight Grid */}
-      <section className="p-10">
-        <h2 className="text-4xl font-black italic uppercase mb-10 border-l-8 border-red-600 pl-4">Premium Fights</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-           {[1, 2, 3].map(i => (
-             <div key={i} className="bg-zinc-950 border border-zinc-900 group cursor-pointer overflow-hidden">
-                <div className="h-48 bg-zinc-900 flex items-center justify-center relative">
-                  <Lock className="text-red-600 group-hover:scale-110 transition" size={48} />
-                  <div className="absolute bottom-2 right-2 bg-red-600 px-2 py-1 text-[10px] font-bold">2 AZN ACCESS</div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-black italic uppercase">Championship Fight #{i}</h3>
-                  <p className="text-zinc-500 text-xs mt-2 uppercase font-bold tracking-widest">Whitelist Required</p>
-                </div>
-             </div>
-           ))}
-        </div>
+      <section className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {fights.map((f) => (
+          <div key={f.id} className="bg-zinc-950 border border-zinc-900 group">
+            <div className="h-56 bg-zinc-900 flex items-center justify-center relative">
+              <Lock className="text-ufcRed group-hover:scale-125 transition-transform" size={40} />
+              <div className="absolute top-0 right-0 bg-ufcRed px-2 py-1 text-[10px] font-black italic text-white">NNA+ EXCLUSIVE</div>
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-black italic mb-4 text-white uppercase">{f.title}</h3>
+              <Link href={`/watch/${f.id}`} className="block text-center bg-white text-black py-2 font-black nna-btn uppercase italic hover:bg-ufcRed hover:text-white transition-all">
+                Unlock Footage
+              </Link>
+            </div>
+          </div>
+        ))}
       </section>
     </main>
   );
